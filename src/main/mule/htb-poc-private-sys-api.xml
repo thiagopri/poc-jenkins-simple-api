@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+
+	<global-property doc:name="Global Property" doc:id="6f0c3d87-60dc-47d3-9f70-4841180f2853" name="htb.http.private.port" value="8093"/>
+
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="45f1e6a8-7932-40cd-8684-557aa0fbb061" >
+		<http:listener-connection host="0.0.0.0" port="${htb.http.private.port}" readTimeout="20000"/>
+	</http:listener-config>
+	
+	<flow name="htb-poc-private-sys-apiFlow" doc:id="0c476d15-5b98-462f-badb-f593b91d510c" >
+		<http:listener doc:name="Listener" doc:id="4ed93246-c6cc-401a-a87b-d724cc196ba9" config-ref="HTTP_Listener_config" path="/sys/test"/>
+		<ee:transform doc:name="Transform Message" doc:id="4e655e7d-04e9-4054-86d8-547c8ed31dac" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Response from private system API through HTTPS"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
